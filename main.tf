@@ -45,7 +45,7 @@ resource "aws_dynamodb_table" "movies-dynamodb-table" {
 resource "aws_lambda_function" "write_movie" {
   function_name = "CreateMovie"
   handler = "index.handler"
-  runtime = "nodejs6.10"
+  runtime = "nodejs8.10"
   filename = "create_movie.zip"
   source_code_hash = "${base64sha256(file("create_movie.zip"))}"
   role = "${aws_iam_role.lambda_exec_role.arn}"
@@ -60,7 +60,7 @@ resource "aws_lambda_function" "write_movie" {
 resource "aws_lambda_function" "read_movies" {
   function_name = "ReadMovies"
   handler = "index.handler"
-  runtime = "nodejs6.10"
+  runtime = "nodejs8.10"
   filename = "read_movies.zip"
   source_code_hash = "${base64sha256(file("read_movies.zip"))}"
   role = "${aws_iam_role.lambda_exec_role.arn}"
@@ -139,7 +139,7 @@ resource "aws_api_gateway_integration" "lambda_write_movie" {
   http_method = "${aws_api_gateway_method.post.http_method}"
 
   integration_http_method = "POST"
-  type                    = "AWS"
+  type                    = "AWS_PROXY"
   uri                     = "${aws_lambda_function.write_movie.invoke_arn}"
   credentials             = "${aws_iam_role.lambda_exec_role.arn}"
 }
@@ -174,7 +174,7 @@ resource "aws_api_gateway_integration" "lambda_read_movies" {
   http_method = "${aws_api_gateway_method.get.http_method}"
 
   integration_http_method = "POST"
-  type                    = "AWS"
+  type                    = "AWS_PROXY"
   uri                     = "${aws_lambda_function.read_movies.invoke_arn}"
   credentials             = "${aws_iam_role.lambda_exec_role.arn}"
 }
